@@ -1,0 +1,62 @@
+version: '3.8'
+
+networks:
+  back:
+volumes:
+  mailadm_db:
+services:
+### DELTA
+  # postfix is running as a part of the delta chat service
+  postfix:
+    image: keith/deltachat-mailadm-postfix:v0.0.3
+    entrypoint:
+    - sh
+    - -c
+    - "postconf -M submission/inet=\"submission inet n - n - - smtpd\" && postconf -P submission/inet/syslog_name=postfix/submission && postconf -P submission/inet/smtpd_tls_security_level=encrypt && postconf -P submission/inet/smtpd_sasl_type=dovecot && postconf -P submission/inet/smtpd_sasl_path=inet:localhost:12345 && postconf -P submission/inet/smtpd_sasl_auth_enable=yes && postconf \"myhostname=${DWEB_DOMAIN}\" && postconf \"mydestination=\" && postconf \"virtual_mailbox_domains=${DWEB_DOMAIN}\" && postconf \"virtual_transport=lmtp:localhost:24\" && postconf \"virtual_mailbox_base=/home/vmail\" && postconf \"virtual_mailbox_maps=texthash:/var/lib/mailadm/virtual_mailboxes\" && postconf \"maillog_file=/dev/stdout\" && postconf \"smtpd_tls_cert_file=/certs/fullchain.pem\" && postconf \"smtpd_tls_key_file=/certs/privkey.pem\" && postfix start-fg" 
+    volumes:
+      - mailadm_db:/var/lib/mailadm/
+      - ../caddy/certs/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
+      - ../caddy/certs/${DWEB_DOMAIN}.key:/certs/privkey.pem
+    environment:
+      MAIL_DOMAIN: "${DWEB_DOMAIN}"
+    networks:
+      - back 
+    depends_on:
+      - caddy
+    restart: always
+
+  # dovecot is running as a part of the delta chat service
+  dovecot:
+    image: keith/deltachat-mailadm-dovecot:v0.0.1
+    volumes:
+      - mailadm_db:/var/lib/mailadm/
+      - ../caddy/certs/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
+      - ../caddy/certs/${DWEB_DOMAIN}.key:/certs/privkey.pem
+    environment:
+      VMAIL_UID: "${VMAIL_UID}"
+      VMAIL_GID: "${VMAIL_GID}"
+    networks:
+      - back 
+    depends_on:
+      - caddy
+    restart: always
+
+  # mailadm is running as a part of the delta chat service
+  mailadm:
+    image: keith/deltachat-mailadm:v0.0.1
+    entrypoint:
+    - sh
+    - -c
+    - mailadm init --web-endpoint="https://${DWEB_DOMAIN}/new_email" --mail-domain=${DWEB_DOMAIN} --vmail-user=vmail ; mailadm add-token ZMqbnG8P --maxuse 100000 --expiry 999d --token ZMqbnG8P ; gunicorn -b :3691 -w 1 mailadm.app:app
+    volumes:
+      - mailadm_db:/var/lib/mailadm/
+    environment:
+      MAIL_DOMAIN: "${DWEB_DOMAIN}"
+      VMAIL_UID: "${VMAIL_UID}"
+      VMAIL_GID: "${VMAIL_GID}"
+      WEB_ENDPOINT: "https://${DWEB_DOMAIN}/new_email"
+    networks:
+      - back 
+    depends_on:
+      - caddy
+    restart: always

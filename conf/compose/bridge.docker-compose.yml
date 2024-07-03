@@ -1,0 +1,18 @@
+version: '3.8'
+
+networks:
+  cenobridge:
+volumes:
+  bridge_storage:
+services:
+### BRIDGE
+  # ceno-client "bridge" service is below
+  bridge:
+    image: equalitie/ceno-client:v0.21.2
+    #networks:
+      #- cenobridge
+    ports:
+      - "28729:28729"
+    volumes:
+      - bridge_storage:/var/opt/ouinet
+    restart: always

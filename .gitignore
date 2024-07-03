@@ -1,0 +1,12 @@
+conf/element/*
+!conf/element/config.json
+!conf/element/nginx.conf
+conf/synapse/*
+conf/caddy/*
+conf/caddy/certs/*
+!conf/caddy/certs/.gitkeep
+!conf/caddy/Caddyfile.tmpl
+conf/mastodon/*.env.production
+!conf/mastodon/example.env.production
+conf/mau/*
+

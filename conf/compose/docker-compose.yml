@@ -1,0 +1,45 @@
+version: '3.8'
+
+networks:
+  back:
+volumes:
+  caddy_data:
+  caddy_config:
+services:
+
+  # caddy acts as a reverse proxy for synapse (matrix)
+  caddy:
+    image: caddy:2.6.4
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - type: bind 
+        source: /var/www
+        target: /www
+      - type: bind
+        source: ../caddy/certs
+        target: /data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}
+    networks:
+      - back 
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443 
+        protocol: tcp
+        mode: host
+    environment:
+          DWEB_DOMAIN: "${DWEB_DOMAIN}"
+          DWEB_ONION: "${DWEB_ONION}"
+    configs:
+      - source: caddy-caddyfile-config
+        target: /etc/caddy/Caddyfile
+    restart: always
+
+configs:
+  caddy-caddyfile-config:
+    template_driver: golang
+    file: ../caddy/Caddyfile.tmpl
+    external: false

@@ -1,0 +1,107 @@
+version: '3.8'
+
+networks:
+  back:
+volumes:
+  synapse_data:
+  synapse_db:
+services:
+### ELEMENT
+  # synapse is a matrix homeserver running as a service
+  synapse:
+    image: matrixdotorg/synapse:v1.110.0
+    entrypoint:
+    - sh
+    - -c
+    - chown -R 991:991 /data ; /start.py
+    volumes:
+      - synapse_data:/data
+    networks:
+      - back
+    ports:
+      - "127.0.0.1:8008:8008"
+    environment:
+      SYNAPSE_CONFIG_DIR: "/data"
+      SYNAPSE_DATA_DIR: "/data"
+      TZ: "UA"
+    depends_on:
+      - caddy
+    configs:
+      - source: synapse-homeserver-config
+        target: /data/homeserver.yaml
+        uid: '991'
+        gid: '991'
+        mode: 0644
+      - source: synapse-signingkey-config
+        target: /data/matrix.${DWEB_DOMAIN}.signing.key
+        uid: '991'
+        gid: '991'
+        mode: 0644
+      - source: synapse-logconfig-config
+        target: /data/matrix.${DWEB_DOMAIN}.log.config
+        uid: '991'
+        gid: '991'
+        mode: 0644
+    restart: always
+
+  synapse-pg:                                                                                        
+    restart: always                                                                                  
+    image: postgres:14-alpine                    
+    healthcheck:                                                                                     
+    test: ['CMD', 'pg_isready', '-U', 'postgres']
+    environment:                                                                                                                                                                                           
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'                                                                                                                                                                  
+      - 'POSTGRES_INITDB_ARGS=--encoding="UTF8" --lc-collate="C" --lc-ctype="C"'
+    volumes:                                                                                         
+      - synapse_db:/var/lib/postgresql/data                                                          
+    depends_on:                                                                                      
+      - caddy
+    networks:
+      - back
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.dwebstackdomain == ${DWEB_DOMAIN}
+        max_replicas_per_node: 1
+      resources:
+        limits:
+          memory: 512M
+
+  # element is a matrix web GUI running as a service
+  element:
+    image: vectorim/element-web:v1.11.69
+    networks:
+      - back
+    ports:
+      - "127.0.0.1:8001:8001"
+    depends_on:
+      - caddy
+      - synapse
+    configs:
+      - source: element-json-config
+        target: /app/config.json
+      - source: element-nginx-config
+        target: /etc/nginx/conf.d/default.conf
+    restart: always
+
+configs:
+  synapse-homeserver-config:
+    file: ../synapse/homeserver.yaml
+    external: false
+  synapse-signingkey-config:
+    file: ../synapse/matrix.${DWEB_DOMAIN}.signing.key
+    external: false
+  synapse-logconfig-config:
+    file: ../synapse/matrix.${DWEB_DOMAIN}.log.config
+    external: false
+  element-json-config:
+    template_driver: golang
+    file: ../element/config.json
+    external: false
+  element-nginx-config:
+    template_driver: golang
+    file: ../element/nginx.conf
+    external: false
+
