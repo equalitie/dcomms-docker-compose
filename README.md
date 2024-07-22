@@ -1,6 +1,3 @@
-# THIS PROJECT HAS MOVED
-https://github.com/equalitie/dcomms-docker-compose
-
 # dcomms
 
 Decentralized communications that work with or without the Internet 
