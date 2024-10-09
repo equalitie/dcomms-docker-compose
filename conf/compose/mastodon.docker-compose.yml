@@ -102,7 +102,7 @@ services:
 
   mastodon-db:
     restart: always
-    image: postgres:14-alpine
+    image: postgres:14.13-alpine
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
     environment:
