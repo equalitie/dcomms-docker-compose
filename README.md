@@ -1,6 +1,6 @@
 # dcomms
 
-Decentralized communications that work with or without the Internet 
+Decentralized communications that work with or without the Internet
 
 # Prerequisites
 * `docker` using the docker guide (https://docs.docker.com/engine/install/)
@@ -67,7 +67,7 @@ In the future, if you need to start the dcomms containers again simply run the `
 
 # Tor
 
-If you wish to provide users with a Tor hidden service address by which they can access your services, you must first install and [configure Tor](https://community.torproject.org/onion-services/setup/). 
+If you wish to provide users with a Tor hidden service address by which they can access your services, you must first install and [configure Tor](https://community.torproject.org/onion-services/setup/).
 The script will detect if you have Tor installed and prompt you for a hidden service address. You can find this in the `hostname` file in your `HiddenServiceDir`.
 
 Example:

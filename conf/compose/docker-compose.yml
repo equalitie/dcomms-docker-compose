@@ -13,21 +13,21 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-      - type: bind 
+      - type: bind
         source: /var/www
         target: /www
       - type: bind
         source: ../caddy/certs
         target: /data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}
     networks:
-      - back 
+      - back
     ports:
       - target: 80
         published: 80
         protocol: tcp
         mode: host
       - target: 443
-        published: 443 
+        published: 443
         protocol: tcp
         mode: host
     environment:

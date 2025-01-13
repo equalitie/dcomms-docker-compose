@@ -179,7 +179,7 @@ matrix_config () {
         -e SYNAPSE_SERVER_NAME=matrix.$DWEB_DOMAIN \
         -e SYNAPSE_REPORT_STATS=no \
         -e SYNAPSE_DATA_DIR=/data \
-    matrixdotorg/synapse:v1.80.0 generate 2>/dev/null
+    matrixdotorg/synapse:v1.121.1 generate 2>/dev/null
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/synapse/
 
     sed -i -z "s/database.*homeserver.db//" $DCOMMS_DIR/conf/element/config.json
@@ -205,19 +205,25 @@ mastodon_config () {
     sudo cp -a $DCOMMS_DIR/conf/mastodon/example.env.production $DCOMMS_DIR/conf/mastodon/env.production
     SECRET_KEY_BASE=`sudo docker run -it --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.2.9 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
         bundle exec rake secret` >/dev/null
 
     OTP_SECRET=$(sudo docker run -it --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.2.9 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
         bundle exec rake secret) >/dev/null
 
     VAPID_KEYS=$(sudo docker run -it --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.2.9 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
         bundle exec rake mastodon:webpush:generate_vapid_key)>/dev/null
     VAPID_FRIENDLY_KEYS=${VAPID_KEYS//$'\n'/\\$'\n'}
+
+    ACTIVE_RECORD_ENCRYPTION=$(sudo docker run -it --rm \
+        --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
+        bundle exec rake db:encryption:init)>/dev/null
+    ACTIVE_RECORD_ENCRYPTION_FRIENDLY_KEYS=${ACTIVE_RECORD_ENCRYPTION//$'\n'/\\$'\n'}
 
     #REDIS_PW=$(openssl rand -base64 12)
 
@@ -225,6 +231,7 @@ mastodon_config () {
     sed -i "s/SECRET_KEY_BASE=/&$SECRET_KEY_BASE/" $DCOMMS_DIR/conf/mastodon/env.production
     sed -i "s/OTP_SECRET=/&$OTP_SECRET/" $DCOMMS_DIR/conf/mastodon/env.production
     sed -i "s/VAPID_KEYS=/$VAPID_FRIENDLY_KEYS/" $DCOMMS_DIR/conf/mastodon/env.production
+    sed -i "s/ACTIVE_RECORD=/$ACTIVE_RECORD_ENCRYPTION_FRIENDLY_KEYS/" $DCOMMS_DIR/conf/mastodon/env.production
     sed -i 's/\r$//g' $DCOMMS_DIR/conf/mastodon/env.production
     sed -i "s/ALTERNATE_DOMAINS=social./&$DWEB_ONION/" $DCOMMS_DIR/conf/mastodon/env.production
     sed -i "s/SMTP_SERVER=/&$DWEB_DOMAIN/" $DCOMMS_DIR/conf/mastodon/env.production
@@ -333,7 +340,7 @@ main() {
             DELTA=true
           ;;
         "2")
-            D_IMAGES+=("vectorim/element-web:v1.11.40" "matrixdotorg/synapse:v1.110.0")
+            D_IMAGES+=("vectorim/element-web:v1.11.88" "matrixdotorg/synapse:v1.121.1")
             FILES+=("synapse_v1.80.0.tar" "element-web_v1.11.26.tar")
             FILE_MAGNETS+=("${MAGNET_LINKS[11]}$MAG_TRACKERS" "${MAGNET_LINKS[6]}$MAG_TRACKERS")
             COMPOSE_FILES+="-f ./conf/compose/element.docker-compose.yml "
@@ -354,7 +361,7 @@ main() {
             MAU=true
           ;;
         "5")
-            D_IMAGES+=("tootsuite/mastodon:v4.2.9" "redis:7.0-alpine" "postgres:14-alpine")
+            D_IMAGES+=("tootsuite/mastodon:v4.3.2" "redis:7.0-alpine" "postgres:14-alpine")
             FILES+=("mastodon_4.1.2.tar" "postgres_14.tar" "redis_7.0.tar")
             FILE_MAGNETS+=("${MAGNET_LINKS[7]}$MAG_TRACKERS" "${MAGNET_LINKS[9]}$MAG_TRACKERS" "${MAGNET_LINKS[10]}$MAG_TRACKERS")
             COMPOSE_FILES+="-f ./conf/compose/mastodon.docker-compose.yml "

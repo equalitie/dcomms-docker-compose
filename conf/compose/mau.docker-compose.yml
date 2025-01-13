@@ -4,7 +4,7 @@ volumes:
   mau_data:
 services:
 ### MAU
-  # mau is a synapse bot we run for news and other things 
+  # mau is a synapse bot we run for news and other things
   mau:
     image: dock.mau.dev/maubot/maubot:v0.3.1
     configs:
@@ -15,7 +15,7 @@ services:
     volumes:
       - mau_data:/data/
     networks:
-      - back 
+      - back
     depends_on:
       - caddy
       - synapse
