@@ -13,22 +13,22 @@ COMPOSE_FILES="-f ./conf/compose/docker-compose.yml "
 
 # Docker saved file names
 FILES=(
-    "dcomms_conf_v2.tar" # If we can grab the install script we can likely grab the configs.
-    "caddy_2.6.4.tar"
+    # "dcomms_conf_v2.tar" # If we can grab the install script we can likely grab the configs.
+    # "caddy_2.6.4.tar"
 )
 
 D_IMAGES=("caddy:2.6.4")
 
 
 DCOMMS_INSTANCES=(
-    "kyiv.dcomm.net.ua"
-    "odessa.dcomm.net.ua"
-    "kharkiv.dcomm.net.ua"
-    "lviv.dcomm.net.ua"
-    "lviv2.dcomm.net.ua"
-    "rivne.dcomm.net.ua"
-    "kherson.dcomm.net.ua"
-    "mykolayiv.dcomm.net.ua"
+    # "kyiv.dcomm.net.ua"
+    # "odessa.dcomm.net.ua"
+    # "kharkiv.dcomm.net.ua"
+    # "lviv.dcomm.net.ua"
+    # "lviv2.dcomm.net.ua"
+    # "rivne.dcomm.net.ua"
+    # "kherson.dcomm.net.ua"
+    # "mykolayiv.dcomm.net.ua"
 )
 
 IPFS_GATEWAYS=(
@@ -109,8 +109,8 @@ check_requirements () {
 
 detect_connectivity () {
     # This function tests all available means to retrieve the dComms repository.
-    if  sudo docker pull hello-world >/dev/null 2>&1; then
-        sudo docker rmi hello-world >/dev/null 2>&1
+    if  docker pull hello-world >/dev/null 2>&1; then
+        docker rmi hello-world >/dev/null 2>&1
         printf "${GREEN}## Successfully connected to Docker Hub${NC}\n"
         HUB_REACHABLE=true
     else
@@ -174,7 +174,7 @@ detect_connectivity () {
 #Spins up a temporary docker container to generate synapse config files and keys
 matrix_config () {
     printf "${YELLOW}## Generating synapse config${NC}\n"
-    sudo docker run -it --rm \
+    docker run --rm \
         --mount type=bind,src=$(readlink -f $DCOMMS_DIR/conf/synapse),dst=/data \
         -e SYNAPSE_SERVER_NAME=matrix.$DWEB_DOMAIN \
         -e SYNAPSE_REPORT_STATS=no \
@@ -182,17 +182,17 @@ matrix_config () {
     matrixdotorg/synapse:v1.121.1 generate 2>/dev/null
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/synapse/
 
-    sed -i -z "s/database.*homeserver.db//" $DCOMMS_DIR/conf/element/config.json
-    sed -i "s/# vim:ft=yaml//" $DCOMMS_DIR/conf/element/config.json
+    sed -i -z "s/database.*homeserver.db//" $DCOMMS_DIR/conf/synapse/config.json
+    sed -i "s/# vim:ft=yaml//" $DCOMMS_DIR/conf/synapse/config.json
 
-    printf "enable_registration: true\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "registration_requires_token: true\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "encryption_enabled_by_default_for_room_type: all\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "rc_registration:\n  per_second: 0.1 \n  burst_count: 2\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "presence:\n  enabled: false\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "database:\n  name: psycopg2\n  txn_limit: 10000\n  args:\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "    user: synapse\n    password: null\n    database: synapse\n    host: localhost\n" >> $DCOMMS_DIR/conf/element/config.json
-    printf "    port: 5432\n    cp_min: 5\n    cp_max: 10\n" >> $DCOMMS_DIR/conf/element/config.json
+    printf "enable_registration: true\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "registration_requires_token: true\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "encryption_enabled_by_default_for_room_type: all\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "rc_registration:\n  per_second: 0.1 \n  burst_count: 2\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "presence:\n  enabled: false\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "database:\n  name: psycopg2\n  txn_limit: 10000\n  args:\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "    user: synapse\n    password: null\n    database: synapse\n    host: localhost\n" >> $DCOMMS_DIR/conf/synapse/config.json
+    printf "    port: 5432\n    cp_min: 5\n    cp_max: 10\n" >> $DCOMMS_DIR/conf/synapse/config.json
 
     sed -i "s/TEMPLATE/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/element/config.json
 }
@@ -200,26 +200,26 @@ matrix_config () {
 #Mastodon's config file requires a number of keys to be generated. We spin up a temporary container to do this.
 #Volume must be removed before running
 mastodon_config () {
-    sudo docker volume rm masto_data_tmp 2> /dev/null || true
+    docker volume rm masto_data_tmp 2> /dev/null || true
     printf "${YELLOW}## Generating mastodon config${NC}\n"
     sudo cp -a $DCOMMS_DIR/conf/mastodon/example.env.production $DCOMMS_DIR/conf/mastodon/env.production
-    SECRET_KEY_BASE=`sudo docker run -it --rm \
+    SECRET_KEY_BASE=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
             -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
-        bundle exec rake secret` >/dev/null
+        bundle exec rails secret) >/dev/null
 
-    OTP_SECRET=$(sudo docker run -it --rm \
+    OTP_SECRET=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
             -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
-        bundle exec rake secret) >/dev/null
+        bundle exec rails secret) >/dev/null
 
-    VAPID_KEYS=$(sudo docker run -it --rm \
+    VAPID_KEYS=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
             -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
-        bundle exec rake mastodon:webpush:generate_vapid_key)>/dev/null
+        bundle exec rails mastodon:webpush:generate_vapid_key)>/dev/null
     VAPID_FRIENDLY_KEYS=${VAPID_KEYS//$'\n'/\\$'\n'}
 
-    ACTIVE_RECORD_ENCRYPTION=$(sudo docker run -it --rm \
+    ACTIVE_RECORD_ENCRYPTION=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
             -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
         bundle exec rake db:encryption:init)>/dev/null
@@ -239,15 +239,16 @@ mastodon_config () {
     
     printf "${YELLOW}## Initializing mastodon database${NC}\n"
     
-    docker compose -f ./conf/compose/mastodon.docker-compose.yml run --rm mastodon-web bundle exec rake db:prepare
-    docker compose -f ./conf/compose/mastodon.docker-compose.yml run --rm mastodon-web bundle exec rake db:migrate
+    docker compose -f ./conf/compose/mastodon.docker-compose.yml run --entrypoint="bundle exec rails db:create" --rm mastodon-web
+    docker compose -f ./conf/compose/mastodon.docker-compose.yml run --entrypoint="bundle exec rake db:prepare" --rm mastodon-web
+    docker compose -f ./conf/compose/mastodon.docker-compose.yml run --entrypoint="bundle exec rake db:migrate" --rm mastodon-web
 
     docker volume rm -f masto_data_tmp
 }
 
 mau_config () {
     printf "${YELLOW}## Generating mau bot config${NC}\n"
-    sudo docker run --rm --mount type=bind,src=$(readlink -f $DCOMMS_DIR/conf/mau),dst=/data dock.mau.dev/maubot/maubot:v0.3.1 1>&2  >/dev/null
+    docker run --rm --mount type=bind,src=$(readlink -f $DCOMMS_DIR/conf/mau),dst=/data dock.mau.dev/maubot/maubot:v0.3.1 1>&2  >/dev/null
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/mau 
     MAU_PW=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 18)
     printf "${RED}## Mau credentials = admin:$MAU_PW${NC}\n"
@@ -397,7 +398,7 @@ main() {
         printf "${GREEN}### Grabbing images from Docker Hub.${NC}\n"
         for img in ${D_IMAGES[@]}; do
             echo "dimg = $img"
-            if sudo docker pull $img; then
+            if docker pull $img; then
                 unset 'FILES[$di]'
                 ((di=di+=1))
             fi
@@ -409,7 +410,7 @@ main() {
     #Might be wise to bring this out of this function so that we can validate before loading
 #    for f in $DCOMMS_DIR/images/*.tar; do
 #        echo ""
-#        cat $f | sudo docker load
+#        cat $f | docker load
 #    done
 
     echo "#!/bin/bash" > $DCOMMS_DIR/run.sh

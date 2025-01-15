@@ -15,4 +15,3 @@ services:
       - "28729:28729"
     volumes:
       - bridge_storage:/var/opt/ouinet
-    restart: always

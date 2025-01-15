@@ -12,7 +12,6 @@ services:
 ### MASTODON
 
   mastodon-redis:
-    restart: always
     image: redis:7.0-alpine
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
@@ -21,10 +20,8 @@ services:
       - mastodon_redis:/data
     networks:
       - mast-int
-    restart: always
 
   mastodon-web:
-    restart: always
     image: tootsuite/mastodon:v4.3.0
       #healthcheck:
       #test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:3000/health || exit 1']
@@ -52,10 +49,8 @@ services:
     networks:
       - mast-int
       - back
-    restart: always
 
   mastodon-streaming:
-    restart: always
     image: tootsuite/mastodon-streaming:v4.3.2
     healthcheck:
       test: wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1
@@ -65,7 +60,6 @@ services:
       - "127.0.0.1:4000:4000"
     environment:
       LOCAL_DOMAIN: "mastodon.${DWEB_DOMAIN}"
-      SMTP_FROM_ADDRESS: "notifications@${DWEB_DOMAIN}"
     command: node ./streaming
     depends_on:
       - mastodon-db
@@ -73,22 +67,19 @@ services:
     networks:
       - mast-int
       - back
-    restart: always
 
   mastodon-sidekiq:
-    restart: always
     image: tootsuite/mastodon:v4.3.2
     entrypoint:
      - sh
      - -c
-     - "service sendmail start && /usr/bin/tini -- bundle exec sidekiq"
+     - "/usr/bin/tini -- bundle exec sidekiq"
     healthcheck:
       test: ps aux | grep '[s]idekiq\ 6' || false
     env_file: ../mastodon/env.production
     environment:
       LOCAL_DOMAIN: "mastodon.${DWEB_DOMAIN}"
       SMTP_FROM_ADDRESS: "notifications@${DWEB_DOMAIN}"
-    command: bundle exec sidekiq
     depends_on:
       - mastodon-db
       - mastodon-redis
@@ -100,18 +91,16 @@ services:
           subpath: system
     networks:
       - mast-int
-    restart: always
 
   mastodon-db:
-    restart: always
     image: postgres:14.13-alpine
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
     environment:
       - 'POSTGRES_HOST_AUTH_METHOD=trust'
+      - 'POSTGRES_DB=mastodon'
     volumes:
       - mastodon_db:/var/lib/postgresql/data
     networks:
       - mast-int
-    restart: always
 

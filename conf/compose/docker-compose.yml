@@ -36,10 +36,8 @@ services:
     configs:
       - source: caddy-caddyfile-config
         target: /etc/caddy/Caddyfile
-    restart: always
 
 configs:
   caddy-caddyfile-config:
-    template_driver: golang
     file: ../caddy/Caddyfile.tmpl
     external: false

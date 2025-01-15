@@ -23,7 +23,6 @@ services:
       - back
     depends_on:
       - caddy
-    restart: always
 
   # dovecot is running as a part of the delta chat service
   dovecot:
@@ -39,7 +38,6 @@ services:
       - back
     depends_on:
       - caddy
-    restart: always
 
   # mailadm is running as a part of the delta chat service
   mailadm:
@@ -59,4 +57,4 @@ services:
       - back
     depends_on:
       - caddy
-    restart: always
+
