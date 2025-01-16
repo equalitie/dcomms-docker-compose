@@ -32,9 +32,6 @@ services:
     env_file: ../mastodon/env.production
     ports:
       - "127.0.0.1:3000:3000"
-    environment:
-      LOCAL_DOMAIN: "mastodon.${DWEB_DOMAIN}"
-      SMTP_FROM_ADDRESS: "notifications${DWEB_DOMAIN}"
     command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
     depends_on:
       - mastodon-db
@@ -58,8 +55,6 @@ services:
     env_file: ../mastodon/env.production
     ports:
       - "127.0.0.1:4000:4000"
-    environment:
-      LOCAL_DOMAIN: "mastodon.${DWEB_DOMAIN}"
     command: node ./streaming
     depends_on:
       - mastodon-db
@@ -77,9 +72,6 @@ services:
     healthcheck:
       test: ps aux | grep '[s]idekiq\ 6' || false
     env_file: ../mastodon/env.production
-    environment:
-      LOCAL_DOMAIN: "mastodon.${DWEB_DOMAIN}"
-      SMTP_FROM_ADDRESS: "notifications@${DWEB_DOMAIN}"
     depends_on:
       - mastodon-db
       - mastodon-redis
