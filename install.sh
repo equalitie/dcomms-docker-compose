@@ -222,7 +222,7 @@ mastodon_config () {
     ACTIVE_RECORD_ENCRYPTION=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
             -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
-        bundle exec rake db:encryption:init)>/dev/null
+        bundle exec rake db:encryption:init | last -3)>/dev/null
     ACTIVE_RECORD_ENCRYPTION_FRIENDLY_KEYS=${ACTIVE_RECORD_ENCRYPTION//$'\n'/\\$'\n'}
 
     #REDIS_PW=$(openssl rand -base64 12)
@@ -405,7 +405,7 @@ main() {
            
         done
     fi
-    grab_files
+    #grab_files
 
     #Might be wise to bring this out of this function so that we can validate before loading
 #    for f in $DCOMMS_DIR/images/*.tar; do
