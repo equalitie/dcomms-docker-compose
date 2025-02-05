@@ -24,8 +24,6 @@ services:
       SYNAPSE_CONFIG_DIR: "/data"
       SYNAPSE_DATA_DIR: "/data"
       TZ: "UA"
-    depends_on:
-      - caddy
     configs:
       - source: synapse-homeserver-config
         target: /data/homeserver.yaml
@@ -48,12 +46,12 @@ services:
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
     environment:
+      - 'POSTGRES_DB=synapse'
+      - 'POSTGRES_USER=synapse'
       - 'POSTGRES_HOST_AUTH_METHOD=trust'
       - 'POSTGRES_INITDB_ARGS=--encoding="UTF8" --lc-collate="C" --lc-ctype="C"'
     volumes:
       - synapse_db:/var/lib/postgresql/data
-    depends_on:
-      - caddy
     networks:
       - back
     deploy:
@@ -75,7 +73,6 @@ services:
     ports:
       - "127.0.0.1:8001:8001"
     depends_on:
-      - caddy
       - synapse
     configs:
       - source: element-json-config

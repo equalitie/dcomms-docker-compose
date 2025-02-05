@@ -41,8 +41,6 @@ services:
       - type: volume
         source: mastodon_public
         target: /mastodon/public/system
-        volume:
-          subpath: system
     networks:
       - mast-int
       - back
@@ -79,8 +77,6 @@ services:
       - type: volume
         source: mastodon_public
         target: /mastodon/public/system
-        volume:
-          subpath: system
     networks:
       - mast-int
 
