@@ -139,6 +139,16 @@ mastodon_config () {
     docker volume rm -f masto_data_tmp
 }
 
+peertube_config () {
+    printf "${YELLOW}## Generating Peertube config${NC}\n"
+
+    PEERTUBE_SECRET=$(openssl rand -hex 32)
+
+    sed -i "s/REPLACEME/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/peertube/environment
+    sed -i "s/PEERTUBE_SECRET=/PEERTUBE_SECRET=$PEERTUBE_SECRET/" $DCOMMS_DIR/conf/peertube/environment
+
+}
+
 mau_config () {
     printf "${YELLOW}## Generating mau bot config${NC}\n"
     docker run --rm --mount type=bind,src=$(readlink -f $DCOMMS_DIR/conf/mau),dst=/data dock.mau.dev/maubot/maubot:v0.3.1 1>&2  >/dev/null
@@ -193,7 +203,8 @@ main() {
       "2" "Element & Synapse" ON \
       "3" "Ceno Bridge" ON \
       "4" "Maubot" OFF \
-      "5" "Mastodon" OFF 3>&1 1>&2 2>&3)
+      "5" "Mastodon" OFF \
+      "6" "Peertube" OFF 3>&1 1>&2 2>&3)
 
     if [ -z "$CHOICES" ]; then
       echo "No option was selected (user hit Cancel or unselected all options)"
@@ -226,6 +237,10 @@ main() {
             COMPOSE_FILES+="-f ./conf/compose/mastodon.docker-compose.yml "
             MASTO=true
           ;;
+	"6")
+           COMPOSE_FILES+="-f ./conf/compose/peertube.docker-compose.yml "
+           PEERTUBE=true
+	  ;;
         *)
           echo "Unsupported item $CHOICE!" >&2
           exit 1
@@ -250,7 +265,6 @@ main() {
 
     detect_connectivity
 
-    mkdir -p $DCOMMS_DIR/images
     if [[ "${HUB_REACHABLE}" == true ]]; then
         di=1
         printf "${GREEN}### Grabbing images from Docker Hub.${NC}\n"
@@ -285,6 +299,9 @@ main() {
     fi
     if [[ "${MASTO}" == true ]]; then
         mastodon_config
+    fi
+    if [[ "${PEERTUBE}" == true ]]; then
+        peertube_config
     fi
     echo "sudo DWEB_ONION=$DWEB_ONION DWEB_DOMAIN=$DWEB_DOMAIN DWEB_FRIENDLY_DOMAIN=$DWEB_FRIENDLY_DOMAIN docker compose $COMPOSE_FILES up -d" >> $DCOMMS_DIR/run.sh
     chmod +x $DCOMMS_DIR/run.sh

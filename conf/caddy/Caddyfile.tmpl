@@ -41,6 +41,14 @@ matrix.{$DWEB_DOMAIN}:8448 {
   reverse_proxy http://synapse:8008
 }
 
+peertube.{$DWEB_DOMAIN}:1935, https://peertube.{$DWEB_DOMAIN}:1935 {
+  reverse_proxy http://peertube-back:1935
+}
+
+peertube.{$DWEB_DOMAIN}, https://peertube.{$DWEB_DOMAIN} {
+  reverse_proxy http://peertube-back:9010
+}
+
 social.{$DWEB_DOMAIN}, http://social.{$DWEB_ONION} {
 
     root * /srv/mastodon/public
