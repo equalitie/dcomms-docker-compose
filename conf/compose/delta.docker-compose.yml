@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   back:
 volumes:
@@ -8,7 +6,7 @@ services:
 ### DELTA
   # postfix is running as a part of the delta chat service
   postfix:
-    image: keith/deltachat-mailadm-postfix:v0.0.3
+    image: keith/deltachat-mailadm-postfix:v0.0.4
     entrypoint:
     - sh
     - -c
@@ -26,7 +24,7 @@ services:
 
   # dovecot is running as a part of the delta chat service
   dovecot:
-    image: keith/deltachat-mailadm-dovecot:v0.0.1
+    image: keith/deltachat-mailadm-dovecot:v0.0.2
     volumes:
       - mailadm_db:/var/lib/mailadm/
       - ../caddy/certs/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
@@ -41,7 +39,7 @@ services:
 
   # mailadm is running as a part of the delta chat service
   mailadm:
-    image: keith/deltachat-mailadm:v0.0.1
+    image: keith/deltachat-mailadm:v0.0.2
     entrypoint:
     - sh
     - -c
