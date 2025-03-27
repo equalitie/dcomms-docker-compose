@@ -6,7 +6,7 @@ services:
 ### MAU
   # mau is a synapse bot we run for news and other things
   mau:
-    image: dock.mau.dev/maubot/maubot:v0.3.1
+    image: dock.mau.dev/maubot/maubot:v0.5.1
     configs:
       - source: mau-config
         target: /data/config.yaml

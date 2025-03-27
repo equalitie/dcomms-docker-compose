@@ -9,7 +9,7 @@ services:
 ### ELEMENT
   # synapse is a matrix homeserver running as a service
   synapse:
-    image: matrixdotorg/synapse:v1.121.1
+    image: matrixdotorg/synapse:v1.127.0
     entrypoint:
     - sh
     - -c
@@ -27,19 +27,10 @@ services:
     configs:
       - source: synapse-homeserver-config
         target: /data/homeserver.yaml
-        uid: '991'
-        gid: '991'
-        mode: 0644
       - source: synapse-signingkey-config
         target: /data/matrix.${DWEB_DOMAIN}.signing.key
-        uid: '991'
-        gid: '991'
-        mode: 0644
       - source: synapse-logconfig-config
         target: /data/matrix.${DWEB_DOMAIN}.log.config
-        uid: '991'
-        gid: '991'
-        mode: 0644
 
   synapse-pg:
     image: postgres:14-alpine
@@ -67,7 +58,7 @@ services:
 
   # element is a matrix web GUI running as a service
   element:
-    image: vectorim/element-web:v1.11.88
+    image: vectorim/element-web:v1.11.96
     networks:
       - back
     ports:
