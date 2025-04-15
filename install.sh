@@ -76,8 +76,6 @@ matrix_config () {
         -e SYNAPSE_REPORT_STATS=no \
         -e SYNAPSE_DATA_DIR=/data \
     matrixdotorg/synapse:v1.121.1 generate 2>/dev/null
-    sudo chown -R 991:991 $DCOMMS_DIR/conf/synapse/
-    sudo chown -R 991:991 $DCOMMS_DIR/conf/element/
 
     sed -i -z "s/database.*homeserver.db//" $DCOMMS_DIR/conf/synapse/homeserver.yaml
     sed -i "s/# vim:ft=yaml//" $DCOMMS_DIR/conf/synapse/homeserver.yaml
@@ -92,6 +90,10 @@ matrix_config () {
     printf "    port: 5432\n    cp_min: 5\n    cp_max: 10\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
 
     sed -i "s/TEMPLATE/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/element/config.json
+
+    sudo chown -R 991:991 $DCOMMS_DIR/conf/synapse/
+    sudo chown -R 991:991 $DCOMMS_DIR/conf/element/
+
 }
 
 #Mastodon's config file requires a number of keys to be generated. We spin up a temporary container to do this.
