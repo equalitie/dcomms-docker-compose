@@ -89,7 +89,7 @@ matrix_config () {
     printf "rc_registration:\n  per_second: 0.1 \n  burst_count: 2\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "presence:\n  enabled: false\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "database:\n  name: psycopg2\n  txn_limit: 10000\n  args:\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
-    printf "    user: postgres\n    password: null\n    database: synapse\n    host: synapse-pg\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
+    printf "    user: postgres\n    password: null\n    database: postgres\n    host: synapse-pg\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "    port: 5432\n    cp_min: 5\n    cp_max: 10\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
 
     sed -i "s/TEMPLATE/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/element/config.json
