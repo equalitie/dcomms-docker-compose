@@ -77,6 +77,9 @@ matrix_config () {
         -e SYNAPSE_DATA_DIR=/data \
     matrixdotorg/synapse:v1.121.1 generate 2>/dev/null
 
+    sudo chown -R $USER:$USER $DCOMMS_DIR/conf/synapse/
+    sudo chown -R $USER:$USER $DCOMMS_DIR/conf/element
+
     sed -i -z "s/database.*homeserver.db//" $DCOMMS_DIR/conf/synapse/homeserver.yaml
     sed -i "s/# vim:ft=yaml//" $DCOMMS_DIR/conf/synapse/homeserver.yaml
 
