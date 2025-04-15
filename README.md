@@ -57,6 +57,8 @@ DeltaChat (postfix/dovecot): 587/tcp 143/tcp
 
 # Installation
 
+[![asciicast](https://asciinema.org/a/9En7vMaopv2eWYf3T6W7saJh9.svg)](https://asciinema.org/a/9En7vMaopv2eWYf3T6W7saJh9)
+
 Point the following A records to the docker worker you wish to use for deployment:
 ```
 matrix.server1.example.org -> IP of your server
