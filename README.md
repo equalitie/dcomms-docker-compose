@@ -10,6 +10,23 @@ Decentralized communications that work with or without the Internet
 * A subdomain with the MX record pointed to the A record of a node for DeltaChat mail delivery.
 * (Optional) A Tor hidden service [configured](https://community.torproject.org/onion-services/setup/), and listening on port 80 and 8448.
 
+# Hardware requirements
+The system requirements will depend on several factors, including user-count, federation level, services and selecte, so we recommend choosing a system configuration that allows for the addition of resources.  
+A bare minimum system running all services for a small number of users would require:
+* 4GB RAM
+* 2 Cores
+* 50Gb disk
+
+Whereas a deployment running all services for hundres of users would require:
+* 16GB RAM
+* 4 Cores
+* 200Gb disk
+
+The previous configuration could potentially scale to a user count of near 1000, if the level of user activity is low, however if each service is very active and federated then we recommend a minimum of:
+* 32GB RAM
+* 16 Cores
+* 1TB disk
+
 # Introduction
 
 `dcomms` is a bundle of decentralized communication software running as services in the form of a docker swarm stack.
@@ -44,6 +61,7 @@ Point the following A records to the docker worker you wish to use for deploymen
 ```
 matrix.server1.example.org -> IP of your server
 chat.server1.example.org -> IP of your server
+peertube.server1.example.org -> IP of your server
 server1.example.org -> IP of your server
 ```
 
