@@ -15,16 +15,19 @@ export HUB_REACHABLE=false
 export TOR_AVAIL=false
 i=0
 
-echo "This script requires root access to interact with Docker. Please enter your password if prompted."
+echo "This script may require root access to interact with Docker."
 sudo echo ""
 
 #This funciton uses which to discover what packages are installed on this system.
 #Should investigate which command has the most interoperability
 check_requirements () {
-    if ! which curl docker >/dev/null; then
-        printf "${RED}## This script depends on curl and docker.\n"
-        printf "Please install 'curl' and/or install docker.\n"
-        printf "https://docs.docker.com/engine/install/${NC}\n"
+    if ! which dig curl docker >/dev/null; then
+        printf "${RED}## Some dependencies are not installed\n"
+        printf "Please install:\n"
+        printf "- curl\n"
+        printf "- dnsutils\n"
+        printf "- docker (https://docs.docker.com/engine/install/)\n"
+        printf "${NC}\n"
         exit 1
     fi
     if which torify >/dev/null; then
@@ -153,7 +156,7 @@ mau_config () {
     printf "${YELLOW}## Generating mau bot config${NC}\n"
     docker run --rm --mount type=bind,src=$(readlink -f $DCOMMS_DIR/conf/mau),dst=/data dock.mau.dev/maubot/maubot:v0.3.1 1>&2  >/dev/null
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/mau 
-    MAU_PW=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 18)
+    MAU_PW=$(tr -dc 'A-Za-z0-9' < /dev/random | head -c 18)
     printf "${RED}## Mau credentials = admin:$MAU_PW${NC}\n"
     MAU_CREDS="admin:$MAU_PW"
     sed -i "s/admins:/&\n  admin: $MAU_PW/" $DCOMMS_DIR/conf/mau/config.yaml
@@ -216,11 +219,14 @@ main() {
             D_IMAGES+=("keith/deltachat-mailadm-postfix:v0.0.3" "keith/deltachat-mailadm-dovecot:v0.0.1" "keith/deltachat-mailadm:v0.0.1")
             COMPOSE_FILES+="-f ./conf/compose/delta.docker-compose.yml "
             DELTA=true
+            DNS_RECORD="${DNS_RECORD}MX $(dig MX +short "$DWEB_DOMAIN")\n"
           ;;
         "2")
             D_IMAGES+=("vectorim/element-web:v1.11.88" "matrixdotorg/synapse:v1.121.1")
             COMPOSE_FILES+="-f ./conf/compose/element.docker-compose.yml "
             MATRIX=true
+            DNS_RECORD="${DNS_RECORD}Chat $(dig +short "chat.$DWEB_DOMAIN")\n"
+            DNS_RECORD="${DNS_RECORD}Matrix $(dig +short "matrix.$DWEB_DOMAIN")\n"
           ;;
         "3")
             D_IMAGES+=("equalitie/ceno-client:v0.21.2")
@@ -236,10 +242,12 @@ main() {
             D_IMAGES+=("tootsuite/mastodon:v4.3.2" "redis:7.0-alpine" "postgres:14-alpine")
             COMPOSE_FILES+="-f ./conf/compose/mastodon.docker-compose.yml "
             MASTO=true
+            DNS_RECORD="${DNS_RECORD}Mastodon $(dig +short "social.$DWEB_DOMAIN")\n"
           ;;
 	"6")
-           COMPOSE_FILES+="-f ./conf/compose/peertube.docker-compose.yml "
-           PEERTUBE=true
+            COMPOSE_FILES+="-f ./conf/compose/peertube.docker-compose.yml "
+            PEERTUBE=true
+            DNS_RECORD="${DNS_RECORD}Peertube $(dig +short "peertube.$DWEB_DOMAIN")\n"
 	  ;;
         *)
           echo "Unsupported item $CHOICE!" >&2
@@ -249,12 +257,19 @@ main() {
       done
     fi
 
+    DNS=$(whiptail --title "DNS Records" --yesno "Do these DNS records look right?\n$DNS_RECORD" 16 78 10 3>&1 1>&2 2>&3; echo $?)
+
+    if [ "$DNS" -eq "1" ]; then
+        printf "${RED}##DNS records are incorrect, please set them before proceeding.${NC}\n"
+        exit
+    fi
+
     TMP_DIR_F=$(mktemp -d)    
 
     trap 'rm -rf "$TMP_DIR_C"' EXIT 
 
     if [[ "${MAU}" == true ]] && [[ "${MATRIX}" == false ]]; then
-        print "${RED}##Mau is a Matrix bot. You must install Matrix as well.${NC}\n"
+        printf "${RED}##Mau is a Matrix bot. You must install Matrix as well.${NC}\n"
         exit
     fi
 
