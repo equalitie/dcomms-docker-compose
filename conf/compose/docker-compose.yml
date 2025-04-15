@@ -14,9 +14,6 @@ services:
       - type: bind
         source: /var/www
         target: /www
-      - type: bind
-        source: ../caddy/certs
-        target: /data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}
     networks:
       - back
     ports:
