@@ -66,8 +66,6 @@ services:
     configs:
       - source: element-json-config
         target: /app/config.json
-      - source: element-nginx-config
-        target: /etc/nginx/conf.d/default.conf
 
 configs:
   synapse-homeserver-config:
@@ -81,8 +79,5 @@ configs:
     external: false
   element-json-config:
     file: ../element/config.json
-    external: false
-  element-nginx-config:
-    file: ../element/nginx.conf
     external: false
 
