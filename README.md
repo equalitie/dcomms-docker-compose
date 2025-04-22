@@ -49,9 +49,11 @@ The dcomms stack leverages single node, non-replicated containers of the followi
 
 ## Ports
 
-CENO client: 28729/udp \
-Caddy (webserver): 443/tcp, 80/tcp, 8448/tcp \
-DeltaChat (postfix/dovecot): 587/tcp 143/tcp
+CENO: client: 28729/udp \
+Caddy: (webserver): 443/tcp, 80/tcp, 8448/tcp \
+DeltaChat: (postfix/dovecot): 587/tcp 143/tcp \
+Synapse: 8448/tcp \
+Peertube: 1935/tcp 1936/tcp (if livestreaming enabled)
 
 * Note: `dcomms` leverages docker host networking and therefore we recommend denying access to all other unnecessary ports at the host level.
 
