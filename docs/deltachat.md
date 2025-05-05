@@ -4,7 +4,7 @@ The current Deltachat docker image is running an outdated version of Deltachat. 
 
 ## Creating invite codes
 
-From within the `compose-postfix` Docker container, you can generate a token up to a max of 999 days. Example:
+From within the `compose-chatmail` Docker container, you can generate a token up to a max of 999 days. Example:
 
 ```
 $ mailadm add-token oneday --expiry 999d --prefix="tmp."
