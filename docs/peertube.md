@@ -10,3 +10,7 @@ If you have done so, you can simply reset your password from the login page.
 
 Peertube's options for this are limited. Invitations links are still being developed, and open registration is not recommended.  
 Our suggested workflow is to create a user from the web admin interface, and instruct users to reset their password.
+
+# Links
+
+* Official docs https://docs.joinpeertube.org/
