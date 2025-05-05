@@ -2,7 +2,7 @@
 
 The current Deltachat docker image is running an outdated version of Deltachat. We are in the process of building support for Deltachat's chatmail server.
 
-## Creating admin account and invite codes
+## Creating invite codes
 
 From within the `compose-postfix` Docker container, you can generate a token up to a max of 999 days. Example:
 
