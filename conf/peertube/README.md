@@ -14,3 +14,6 @@ PEERTUBE_SMTP_TLS=true
 PEERTUBE_SMTP_DISABLE_STARTTLS=true
 PEERTUBE_ADMIN_EMAIL=changeme@example.com
 ```
+
+# Links
+- Create first admin user: https://docs.joinpeertube.org/install/any-os#administrator
