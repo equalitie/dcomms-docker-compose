@@ -27,8 +27,8 @@ services:
     image: keith/deltachat-mailadm-dovecot:v0.0.2
     volumes:
       - mailadm_db:/var/lib/mailadm/
-      - ../caddy/certs/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
-      - ../caddy/certs/${DWEB_DOMAIN}.key:/certs/privkey.pem
+      - /var/lib/docker/volumes/compose_caddy_data/_data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
+      - /var/lib/docker/volumes/compose_caddy_data/_data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}/${DWEB_DOMAIN}.key:/certs/privkey.pem
     environment:
       VMAIL_UID: "${VMAIL_UID}"
       VMAIL_GID: "${VMAIL_GID}"
