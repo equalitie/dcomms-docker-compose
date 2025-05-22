@@ -13,8 +13,8 @@ services:
     - "postconf -M submission/inet=\"submission inet n - n - - smtpd\" && postconf -P submission/inet/syslog_name=postfix/submission && postconf -P submission/inet/smtpd_tls_security_level=encrypt && postconf -P submission/inet/smtpd_sasl_type=dovecot && postconf -P submission/inet/smtpd_sasl_path=inet:localhost:12345 && postconf -P submission/inet/smtpd_sasl_auth_enable=yes && postconf \"myhostname=${DWEB_DOMAIN}\" && postconf \"mydestination=\" && postconf \"virtual_mailbox_domains=${DWEB_DOMAIN}\" && postconf \"virtual_transport=lmtp:localhost:24\" && postconf \"virtual_mailbox_base=/home/vmail\" && postconf \"virtual_mailbox_maps=texthash:/var/lib/mailadm/virtual_mailboxes\" && postconf \"maillog_file=/dev/stdout\" && postconf \"smtpd_tls_cert_file=/certs/fullchain.pem\" && postconf \"smtpd_tls_key_file=/certs/privkey.pem\" && postfix start-fg"
     volumes:
       - mailadm_db:/var/lib/mailadm/
-      - ../caddy/certs/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
-      - ../caddy/certs/${DWEB_DOMAIN}.key:/certs/privkey.pem
+      - /var/lib/docker/volumes/compose_caddy_data/_data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}/${DWEB_DOMAIN}.crt:/certs/fullchain.pem
+      - /var/lib/docker/volumes/compose_caddy_data/_data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DWEB_DOMAIN}/${DWEB_DOMAIN}.key:/certs/privkey.pem
     environment:
       MAIL_DOMAIN: "${DWEB_DOMAIN}"
     networks:
