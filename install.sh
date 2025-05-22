@@ -153,6 +153,7 @@ peertube_config () {
 
     PEERTUBE_SECRET=$(openssl rand -hex 32)
 
+    cp $DCOMMS_DIR/conf/peertube/template-environment $DCOMMS_DIR/conf/peertube/environment
     sed -i "s/REPLACEME/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/peertube/environment
     sed -i "s/PEERTUBE_SECRET=/PEERTUBE_SECRET=$PEERTUBE_SECRET/" $DCOMMS_DIR/conf/peertube/environment
 
