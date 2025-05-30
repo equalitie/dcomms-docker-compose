@@ -100,10 +100,10 @@ cat /var/lib/tor/onion_service/hostname
 # Post installation
 
 * Configure email and enable user registration. See the README.md in the service's configuration directory for guidance.
-* Copy a pre-existing website into `/var/www/dcomms/` across all docker nodes or checkout all files from either the [dcomms-web repo (UA)](https://github.com/censorship-no/dcomms-web) or the [chatv3 repo (RU)](https://github.com/censorship-no/chatv3-web) into the same location.
-* Optionally visit `https://server1.example.org` to view the website.
-* Optionally visit `https://chat.server1.example.org` to view the Element service.
-* Optionally configure a Matrix client to use `https://matrix.server1.example.org` as the homeserver.
+* Visit `https://server1.example.org` to view the website.
+* Visit `https://chat.server1.example.org` to view the Element service.
+* Configure a Matrix client to use `https://matrix.server1.example.org` as the homeserver.
+* Optionally move website source files into `/var/www/` on the host system to serve as a landing page.
 
 # Troubleshooting
 
