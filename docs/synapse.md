@@ -33,6 +33,9 @@ Mjolnir is a mod tool for Synapse instances. We have included an example snippet
 
 You should now be able to follow the post-installation steps in https://github.com/matrix-org/mjolnir/blob/main/docs/setup.md#post-install
 
+* Mjolnir docs https://github.com/matrix-org/mjolnir/blob/main/docs/setup.md
+* Matrix.org mjolnir docs: https://matrix.org/docs/communities/moderation/
+
 # Links
 * Official docs: https://element-hq.github.io/synapse/latest/welcome_and_overview.html
-* Matrix.org docs: https://matrix.org/docs/communities/moderation/
+
