@@ -3,6 +3,7 @@ networks:
 volumes:
   synapse_data:
   synapse_db:
+  mjolnir_data:
 services:
 ### ELEMENT
   # synapse is a matrix homeserver running as a service
@@ -65,6 +66,19 @@ services:
     configs:
       - source: element-json-config
         target: /app/config.json
+
+  # See docs/synapse.md for instructions on enabling this
+  # mjolnir:
+  #   image: matrixdotorg/mjolnir:latest
+  #   restart: unless-stopped
+  #   networks:
+  #     - back
+  #   ports:
+  #     - "127.0.0.1:8001:8001"
+  #   depends_on:
+  #     - synapse
+  #   volumes:
+  #     - mjolnir_data:/data
 
 configs:
   synapse-homeserver-config:
