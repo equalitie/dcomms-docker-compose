@@ -1,0 +1,43 @@
+#Change the section below before deploying
+homeserverUrl: "https://matrix.org"
+rawHomeserverUrl: "https://matrix.org"
+accessToken: "YOUR_TOKEN_HERE"
+encryption:
+  use: true
+  username: "mjolnir"
+  password: "password"
+managementRoom: "#moderators:example.org"
+#-----
+dataPath: "/data/storage"
+autojoinOnlyIfManager: true
+recordIgnoredInvites: false
+forwardMentionsToManagementRoom: false
+verboseLogging: false
+logLevel: "INFO"
+syncOnStartup: true
+verifyPermissionsOnStartup: true
+noop: false
+fasterMembershipChecks: false
+automaticallyRedactForReasons:
+  - "spam"
+  - "advertising"
+protectAllJoinedRooms: false
+backgroundDelayMS: 500
+admin:
+  enableMakeRoomAdminCommand: false
+commands:
+  allowNoPrefix: false
+  additionalPrefixes:
+    - "mjolnir_bot"
+  confirmWildcardBan: true
+protections:
+  wordlist:
+    words:
+      - "LoReM"
+      - "IpSuM"
+      - "DoLoR"
+      - "aMeT"
+    minutesBeforeTrusting: 20
+pollReports: false
+displayReports: true
+nsfwSensitivity: .6
