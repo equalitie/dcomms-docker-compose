@@ -19,5 +19,20 @@ user@dcomms-demo:~/dcomms-docker-compose# curl -X POST --header "Authorization: 
 
 Once you have generated a registration token, this can be handed out to users and they can sign-up.
 
+## Mjolnir
+
+Mjolnir is a mod tool for Synapse instances. We have included an example snippet and config for Mjolnir in conf/mjolnir/production.yaml and conf/compose/element.docker-compose.yml.
+
+### Deploying
+
+1. Register a mjolnir accounut as server admin. You can use one of the methods above.
+2. Follow the steps in https://github.com/matrix-org/mjolnir/blob/main/docs/setup.md to retreive an access token
+3. Populate the specified options in conf/mjolnir/production.yaml with your user and server information.
+4. Uncomment the Mjolnir section in conf/compose/element.docker-compose.yml
+5. Run `./run.sh` again.
+
+You should now be able to follow the post-installation steps in https://github.com/matrix-org/mjolnir/blob/main/docs/setup.md#post-install
+
 # Links
 * Official docs: https://element-hq.github.io/synapse/latest/welcome_and_overview.html
+* Matrix.org docs: https://matrix.org/docs/communities/moderation/
