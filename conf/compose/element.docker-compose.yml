@@ -79,6 +79,9 @@ services:
   #     - synapse
   #   volumes:
   #     - mjolnir_data:/data
+  #   configs:
+  #   - source: mjolnir-production-config
+  #     target: /data/config/production.yaml
 
 configs:
   synapse-homeserver-config:
@@ -93,4 +96,6 @@ configs:
   element-json-config:
     file: ../element/config.json
     external: false
-
+  mjolnir-production-config:
+    file: ../mjolnir/production.yaml
+    external: false
