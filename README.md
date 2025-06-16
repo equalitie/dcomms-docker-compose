@@ -85,7 +85,7 @@ Clone or download this repository.  Review `./install.sh` and make any that may 
 
 Once your server meets the prerequisites, installation simply involves running `./install.sh` and responding to any prompts. Configs will be automatically placed in your `DCOMMS_DIR` and a `run.sh` script will be generated.
 
-* Note: If you wish to reinstall dcomms you will need to delete all docker volumes, and the `conf` directory in `DCOMMS_DIR` before running `install.sh` again.
+* Note: If you wish to reinstall dcomms you will need to delete all docker volumes, `run.sh`, and the `conf` directory in `DCOMMS_DIR` before running `install.sh` again.
 
 ## Redeploy
 
