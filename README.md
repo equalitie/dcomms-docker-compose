@@ -61,7 +61,11 @@ Peertube: 1935/tcp 1936/tcp (if livestreaming enabled)
 
 [![asciicast](https://asciinema.org/a/9En7vMaopv2eWYf3T6W7saJh9.svg)](https://asciinema.org/a/9En7vMaopv2eWYf3T6W7saJh9)
 
-Point the following A records to the docker worker you wish to use for deployment:
+## DNS
+
+__Replace `server1.example.org` with your own domain in the examples below__  
+
+Point the following A records to the server IP you wish to use for your deployment:
 ```
 matrix.server1.example.org -> IP of your server
 chat.server1.example.org -> IP of your server
