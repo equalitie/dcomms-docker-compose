@@ -24,9 +24,9 @@ check_requirements () {
     if ! which dig curl docker >/dev/null; then
         printf "${RED}## Some dependencies are not installed\n"
         printf "Please install:\n"
-        printf "- curl\n"
-        printf "- dnsutils\n"
-        printf "- docker (https://docs.docker.com/engine/install/)\n"
+        printf " curl\n"
+        printf " dnsutils\n"
+        printf " docker (https://docs.docker.com/engine/install/)\n"
         printf "${NC}\n"
         exit 1
     fi
