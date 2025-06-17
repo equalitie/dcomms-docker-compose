@@ -3,6 +3,7 @@
 Decentralized communications that work with or without the Internet
 
 # Prerequisites
+* A Linux server with a public static IP address
 * `docker` using the docker guide (https://docs.docker.com/engine/install/)
 * `curl`, `aria2`, `tor`
 * A directory named `/var/www/dcomms` created on the host for the website document root.
