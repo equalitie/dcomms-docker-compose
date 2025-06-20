@@ -81,6 +81,37 @@ services:
 #    - source: mjolnir-production-config
 #      target: /data/config/production.yaml
 
+  auth-service:
+    image: ghcr.io/element-hq/lk-jwt-service:latest
+    environment:
+      - LK_JWT_PORT=8080
+      - LIVEKIT_URL=https://matrixrtc.${DWEB_DOMAIN}/livekit/sfu
+      - LIVEKIT_KEY=devkey
+      - LIVEKIT_SECRET=#CHANGEMENOW # must be same as devkey in conf/synapse/livekit.yml
+      - LIVEKIT_LOCAL_HOMESERVERS=matrix.${DWEB_DOMAIN}
+      - LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING
+    restart: unless-stopped
+    networks:
+      - back
+    depends_on:
+     - synapse
+
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    ports:
+      - 127.0.0.1:7880:7880/tcp
+      - 127.0.0.1:7881:7881/tcp
+      - 50100-50200:50100-50200/udp
+    restart: unless-stopped
+    networks:
+      - back
+    depends_on:
+     - synapse
+    configs:
+      - source: livekit-config
+        target: /etc/livekit.yaml
+
 configs:
   synapse-homeserver-config:
     file: ../synapse/homeserver.yaml
@@ -96,4 +127,7 @@ configs:
     external: false
   mjolnir-production-config:
     file: ../mjolnir/production.yaml
+    external: false
+  livekit-config:
+    file: ../synapse/livekit.yaml
     external: false

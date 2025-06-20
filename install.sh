@@ -84,6 +84,7 @@ matrix_config () {
     sed -i "s/# vim:ft=yaml//" $DCOMMS_DIR/conf/synapse/homeserver.yaml
 
     printf "enable_registration: true\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
+    printf "public_baseurl: matrix.$DWEB_DOMAIN\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "registration_requires_token: true\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "encryption_enabled_by_default_for_room_type: all\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "rc_registration:\n  per_second: 0.1 \n  burst_count: 2\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
@@ -91,7 +92,8 @@ matrix_config () {
     printf "database:\n  name: psycopg2\n  txn_limit: 10000\n  args:\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "    user: postgres\n    password: null\n    database: postgres\n    host: synapse-pg\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "    port: 5432\n    cp_min: 5\n    cp_max: 10\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
-
+    printf "extra_well_known_client_content:\n  org.matrix.msc4143.rtc_foci:\n    - type: \"livekit\"\n      livekit_service_url: \"https://matrixrtc.$DWEB_DOMAIN\"\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
+    printf "experimental_features:\n  msc3266_enabled: true\n  msc4222_enabled: true\n  msc4140_enabled: true\nmax_event_delay_duration: 24h\nrc_message:\n  per_second: 0.5\n  burst_count: 30\nrc_delayed_event_mgmt:\n  per_second: 1\n  burst_count: 20\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     sed -i "s/TEMPLATE/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/element/config.json
 
     sudo chown -R 991:991 $DCOMMS_DIR/conf/synapse/

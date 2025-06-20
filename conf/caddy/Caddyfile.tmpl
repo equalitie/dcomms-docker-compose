@@ -34,11 +34,20 @@ chat.{$DWEB_DOMAIN}, http://chat.{$DWEB_ONION} {
 matrix.{$DWEB_DOMAIN}, http://matrix.{$DWEB_ONION} {
   reverse_proxy /_matrix/* http://synapse:8008
   reverse_proxy /_synapse/client/* http://synapse:8008
+  reverse_proxy /.well-known/* http://synapse:8008
   header Onion-Location http://matrix.{$DWEB_ONION}
 }
 
 matrix.{$DWEB_DOMAIN}:8448 {
   reverse_proxy http://synapse:8008
+}
+
+matrixrtc.{$DWEB_DOMAIN}, https://matrixrtc.{$DWEB_DOMAIN}, wss://matrixrtc.{$DWEB_DOMAIN} {
+  reverse_proxy /livekit/jwt* auth-service:8080
+  reverse_proxy /sfu/get* auth-service:8080
+  handle_path /livekit/sfu* {
+    reverse_proxy livekit:7880
+  }
 }
 
 peertube.{$DWEB_DOMAIN}:1935, https://peertube.{$DWEB_DOMAIN}:1935 {
