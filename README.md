@@ -4,7 +4,8 @@ Decentralized communications that work with or without the Internet
 
 # Prerequisites
 * A Linux server with a public static IP address
-* `docker` using the docker guide (https://docs.docker.com/engine/install/)
+* `docker` using the docker guide (https://docs.docker.com/engine/install/).
+* * __Whichever user you run the script as must be able to run Docker commands. Please follow the post-install steps.__
 * `curl`, `aria2`, `tor`
 * A directory named `/var/www/dcomms` created on the host for the website document root.
 * A subdomain with the A record pointed to the IP address of a node for automatic issuance of a Let's Encrypt SSL certificate.
