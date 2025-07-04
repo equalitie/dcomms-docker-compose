@@ -1,6 +1,7 @@
 conf/element/*
 !conf/element/config.json
 !conf/element/nginx.conf
+!conf/synapse/livekit.yaml
 conf/synapse/*
 conf/caddy/*
 conf/caddy/certs/*
