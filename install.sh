@@ -84,7 +84,7 @@ matrix_config () {
     sed -i "s/# vim:ft=yaml//" $DCOMMS_DIR/conf/synapse/homeserver.yaml
 
     printf "enable_registration: true\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
-    printf "public_baseurl: matrix.$DWEB_DOMAIN\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
+    printf "public_baseurl: https://matrix.$DWEB_DOMAIN\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "registration_requires_token: true\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "encryption_enabled_by_default_for_room_type: all\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "rc_registration:\n  per_second: 0.1 \n  burst_count: 2\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
