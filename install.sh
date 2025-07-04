@@ -211,7 +211,7 @@ main() {
     export DWEB_FRIENDLY_DOMAIN="${DWEB_DOMAIN//./_}"
 
     CHOICES=$(whiptail --separate-output --checklist "Which services would you like?" 10 35 5 \
-      "1" "Delta Chat" ON \
+      "1" "Delta Chat" OFF \
       "2" "Element & Synapse" ON \
       "3" "Ceno Bridge" ON \
       "4" "Maubot" OFF \
@@ -225,10 +225,10 @@ main() {
       for CHOICE in $CHOICES; do
         case "$CHOICE" in
         "1")
-            D_IMAGES+=("keith/deltachat-mailadm-postfix:v0.0.3" "keith/deltachat-mailadm-dovecot:v0.0.1" "keith/deltachat-mailadm:v0.0.1")
-            COMPOSE_FILES+="-f ./conf/compose/delta.docker-compose.yml "
-            DELTA=true
-            DNS_RECORD="${DNS_RECORD}MX $(dig MX +short "$DWEB_DOMAIN")\n"
+            #D_IMAGES+=("keith/deltachat-mailadm-postfix:v0.0.3" "keith/deltachat-mailadm-dovecot:v0.0.1" "keith/deltachat-mailadm:v0.0.1")
+            #COMPOSE_FILES+="-f ./conf/compose/delta.docker-compose.yml "
+            DELTA=false
+            #DNS_RECORD="${DNS_RECORD}MX $(dig MX +short "$DWEB_DOMAIN")\n"
           ;;
         "2")
             D_IMAGES+=("vectorim/element-web:v1.11.88" "matrixdotorg/synapse:v1.121.1")
