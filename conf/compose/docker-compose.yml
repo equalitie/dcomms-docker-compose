@@ -25,6 +25,10 @@ services:
         published: 443
         protocol: tcp
         mode: host
+      - target: 8448
+        published: 8448
+        protocol: tcp
+        mode: host
     environment:
           DWEB_DOMAIN: "${DWEB_DOMAIN}"
           DWEB_ONION: "${DWEB_ONION}"
