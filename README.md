@@ -72,6 +72,7 @@ Point the following A records to the server IP you wish to use for your deployme
 matrix.server1.example.org -> IP of your server
 chat.server1.example.org -> IP of your server
 peertube.server1.example.org -> IP of your server
+social.server1.example.org -> IP of your server
 server1.example.org -> IP of your server
 ```
 
