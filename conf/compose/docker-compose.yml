@@ -7,7 +7,7 @@ services:
 
   # caddy acts as a reverse proxy for synapse (matrix)
   caddy:
-    image: caddy:2.6.4
+    image: caddy:2.10.2
     volumes:
       - caddy_data:/data
       - caddy_config:/config
