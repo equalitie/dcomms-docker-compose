@@ -5,7 +5,7 @@
 
 How to create an admin user can be found in the [admin cli documentation](https://docs.joinmastodon.org/admin/tootctl/). You will need to run these commands within the `compose-mastodon-web` docker container. Example:
 ```
-tootctl accounts create dcomms-admin --email dcomms-admin@example.org --role Owner --confirmed
+tootctl accounts create dcomms_admin --email dcomms-admin@example.org --role Owner --confirmed --approve
 ```
 
 This will display a automatically generated password that can be used on first login.
