@@ -43,7 +43,7 @@ matrix.{$DWEB_DOMAIN}:8448 {
   reverse_proxy http://synapse:8008
 }
 
-matrixrtc.{$DWEB_DOMAIN}, https://matrixrtc.{$DWEB_DOMAIN}, wss://matrixrtc.{$DWEB_DOMAIN} {
+matrixrtc.{$DWEB_DOMAIN}, https://matrixrtc.{$DWEB_DOMAIN} {
   reverse_proxy /livekit/jwt* auth-service:8080
   reverse_proxy /sfu/get* auth-service:8080
   handle_path /livekit/sfu* {
