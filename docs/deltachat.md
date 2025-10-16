@@ -1,3 +1,5 @@
+# Deltachat is currently unsupported while we wait for upstream docker support for Chatmail
+
 # Deltachat
 
 The current Deltachat docker image is running an outdated version of Deltachat. We are in the process of building support for Deltachat's chatmail server.
