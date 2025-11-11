@@ -94,6 +94,7 @@ matrix_config () {
     printf "    port: 5432\n    cp_min: 5\n    cp_max: 10\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "extra_well_known_client_content:\n  org.matrix.msc4143.rtc_foci:\n    - type: \"livekit\"\n      livekit_service_url: \"https://matrixrtc.$DWEB_DOMAIN\"\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
     printf "experimental_features:\n  msc3266_enabled: true\n  msc4222_enabled: true\n  msc4140_enabled: true\nmax_event_delay_duration: 24h\nrc_message:\n  per_second: 0.5\n  burst_count: 30\nrc_delayed_event_mgmt:\n  per_second: 1\n  burst_count: 20\n" >> $DCOMMS_DIR/conf/synapse/homeserver.yaml
+    sed -i "s/REPLACEME/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/synapse/sso.yaml
     sed -i "s/TEMPLATE/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/element/config.json
 
     sudo chown -R 991:991 $DCOMMS_DIR/conf/synapse/
@@ -170,6 +171,18 @@ mau_config () {
     MAU_CREDS="admin:$MAU_PW"
     sed -i "s/admins:/&\n  admin: $MAU_PW/" $DCOMMS_DIR/conf/mau/config.yaml
 }   
+
+keycloak_config () {
+    printf "${YELLOW}## Generating Keycloak config${NC}\n"
+    sed -i "s/REPLACEME/$DWEB_DOMAIN/" $DCOMMS_DIR/conf/keycloak/realm-export.json
+
+    MATRIX_SECRET=$(openssl rand -base64 32)
+    sed -i "s/MATRIX_SECRET/$MATRIX_SECRET/" $DCOMMS_DIR/conf/keycloak/realm-export.json
+
+    MASTODON_SECRET=$(openssl rand -base64 32)
+    sed -i "s/MASTODON_SECRET/$MASTODON_SECRET/" $DCOMMS_DIR/conf/keycloak/realm-export.json
+
+
 
 #The main function does most of the configuration
 main() {
