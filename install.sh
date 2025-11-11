@@ -75,7 +75,7 @@ matrix_config () {
         -e SYNAPSE_SERVER_NAME=matrix.$DWEB_DOMAIN \
         -e SYNAPSE_REPORT_STATS=no \
         -e SYNAPSE_DATA_DIR=/data \
-    matrixdotorg/synapse:v1.121.1 generate 2>/dev/null
+    matrixdotorg/synapse:v1.140.0 generate 2>/dev/null
 
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/synapse/
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/element
@@ -110,23 +110,23 @@ mastodon_config () {
     sudo cp -a $DCOMMS_DIR/conf/mastodon/example.env.production $DCOMMS_DIR/conf/mastodon/env.production
     SECRET_KEY_BASE=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
         bundle exec rails secret) >/dev/null
 
     OTP_SECRET=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
         bundle exec rails secret) >/dev/null
 
     VAPID_KEYS=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
         bundle exec rails mastodon:webpush:generate_vapid_key)>/dev/null
     VAPID_FRIENDLY_KEYS=${VAPID_KEYS//$'\n'/\\$'\n'}
 
     ACTIVE_RECORD_ENCRYPTION=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.3.2 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
         bundle exec rake db:encryption:init | tail -3)>/dev/null
     ACTIVE_RECORD_ENCRYPTION_FRIENDLY_KEYS=${ACTIVE_RECORD_ENCRYPTION//$'\n'/\\$'\n'}
 
@@ -201,7 +201,6 @@ main() {
     checkbox=,black
     entry=,black
     '
-    export DELTA=false
     export MATRIX=false
     export CENO=false
     export MAU=false
@@ -224,12 +223,11 @@ main() {
     export DWEB_FRIENDLY_DOMAIN="${DWEB_DOMAIN//./_}"
 
     CHOICES=$(whiptail --separate-output --checklist "Which services would you like?" 10 35 5 \
-      "1" "Delta Chat" OFF \
-      "2" "Element & Synapse" ON \
-      "3" "Ceno Bridge" ON \
-      "4" "Maubot" OFF \
-      "5" "Mastodon" OFF \
-      "6" "Peertube" OFF 3>&1 1>&2 2>&3)
+      "1" "Element & Synapse" ON \
+      "2" "Ceno Bridge" ON \
+      "3" "Maubot" OFF \
+      "4" "Mastodon" OFF \
+      "5" "Peertube" OFF 3>&1 1>&2 2>&3)
 
     if [ -z "$CHOICES" ]; then
       echo "No option was selected (user hit Cancel or unselected all options)"
@@ -238,35 +236,29 @@ main() {
       for CHOICE in $CHOICES; do
         case "$CHOICE" in
         "1")
-            #D_IMAGES+=("keith/deltachat-mailadm-postfix:v0.0.3" "keith/deltachat-mailadm-dovecot:v0.0.1" "keith/deltachat-mailadm:v0.0.1")
-            #COMPOSE_FILES+="-f ./conf/compose/delta.docker-compose.yml "
-            DELTA=false
-            #DNS_RECORD="${DNS_RECORD}MX $(dig MX +short "$DWEB_DOMAIN")\n"
-          ;;
-        "2")
-            D_IMAGES+=("vectorim/element-web:v1.11.88" "matrixdotorg/synapse:v1.121.1")
+            D_IMAGES+=("vectorim/element-web:v1.12.1" "matrixdotorg/synapse:v1.140.0")
             COMPOSE_FILES+="-f ./conf/compose/element.docker-compose.yml "
             MATRIX=true
             DNS_RECORD="${DNS_RECORD}Chat $(dig +short "chat.$DWEB_DOMAIN")\n"
             DNS_RECORD="${DNS_RECORD}Matrix $(dig +short "matrix.$DWEB_DOMAIN")\n"
           ;;
-        "3")
+        "2")
             D_IMAGES+=("equalitie/ceno-client:v0.21.2")
             COMPOSE_FILES+="-f ./conf/compose/bridge.docker-compose.yml "
             CENO=true
           ;;
-        "4")
+        "3")
             D_IMAGES+=("dock.mau.dev/maubot/maubot:v0.3.1")
             COMPOSE_FILES+="-f ./conf/compose/mau.docker-compose.yml "
             MAU=true
           ;;
-        "5")
-            D_IMAGES+=("tootsuite/mastodon:v4.3.2" "redis:7.0-alpine" "postgres:14-alpine")
+        "4")
+            D_IMAGES+=("tootsuite/mastodon:v4.4" "redis:7.0-alpine" "postgres:14-alpine")
             COMPOSE_FILES+="-f ./conf/compose/mastodon.docker-compose.yml "
             MASTO=true
             DNS_RECORD="${DNS_RECORD}Mastodon $(dig +short "social.$DWEB_DOMAIN")\n"
           ;;
-	"6")
+	"5")
             COMPOSE_FILES+="-f ./conf/compose/peertube.docker-compose.yml "
             PEERTUBE=true
             DNS_RECORD="${DNS_RECORD}Peertube $(dig +short "peertube.$DWEB_DOMAIN")\n"
