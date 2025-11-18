@@ -5,6 +5,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+SYN_V='v1.140.0'
+MAS_V='v4.4'
+
 set -e
 # Directory to save dcomms config files in
 DCOMMS_DIR=$PWD
@@ -75,7 +78,7 @@ matrix_config () {
         -e SYNAPSE_SERVER_NAME=matrix.$DWEB_DOMAIN \
         -e SYNAPSE_REPORT_STATS=no \
         -e SYNAPSE_DATA_DIR=/data \
-    matrixdotorg/synapse:v1.140.0 generate 2>/dev/null
+    matrixdotorg/synapse:$SYN_V generate 2>/dev/null
 
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/synapse/
     sudo chown -R $USER:$USER $DCOMMS_DIR/conf/element
@@ -109,23 +112,23 @@ mastodon_config () {
     sudo cp -a $DCOMMS_DIR/conf/mastodon/example.env.production $DCOMMS_DIR/conf/mastodon/env.production
     SECRET_KEY_BASE=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:$MAS_V \
         bundle exec rails secret) >/dev/null
 
     OTP_SECRET=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:$MAS_V \
         bundle exec rails secret) >/dev/null
 
     VAPID_KEYS=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:$MAS_V \
         bundle exec rails mastodon:webpush:generate_vapid_key)>/dev/null
     VAPID_FRIENDLY_KEYS=${VAPID_KEYS//$'\n'/\\$'\n'}
 
     ACTIVE_RECORD_ENCRYPTION=$(docker run --rm \
         --mount type=volume,src=masto_data_tmp,dst=/opt/mastodon \
-            -e RUBYOPT=-W0 tootsuite/mastodon:v4.4 \
+            -e RUBYOPT=-W0 tootsuite/mastodon:$MAS_V \
         bundle exec rake db:encryption:init | tail -3)>/dev/null
     ACTIVE_RECORD_ENCRYPTION_FRIENDLY_KEYS=${ACTIVE_RECORD_ENCRYPTION//$'\n'/\\$'\n'}
 
@@ -223,8 +226,8 @@ main() {
       for CHOICE in $CHOICES; do
         case "$CHOICE" in
         "1")
-            D_IMAGES+=("vectorim/element-web:v1.12.1" "matrixdotorg/synapse:v1.140.0")
-            COMPOSE_FILES+="-f ./conf/compose/element.docker-compose.yml "
+            D_IMAGES+=("vectorim/element-web:v1.12.1" "matrixdotorg/synapse:$SYN_V")
+            COMPOSE_FILES+="-f ./conf/compose/element.docker-compose.yml -f ./conf/compose/synapse.docker-compose.yml "
             MATRIX=true
             DNS_RECORD="${DNS_RECORD}Chat $(dig +short "chat.$DWEB_DOMAIN")\n"
             DNS_RECORD="${DNS_RECORD}Matrix $(dig +short "matrix.$DWEB_DOMAIN")\n"
@@ -240,7 +243,7 @@ main() {
             MAU=true
           ;;
         "4")
-            D_IMAGES+=("tootsuite/mastodon:v4.4" "redis:7.0-alpine" "postgres:14-alpine")
+            D_IMAGES+=("tootsuite/mastodon:$MAS_V" "redis:7.0-alpine" "postgres:14-alpine")
             COMPOSE_FILES+="-f ./conf/compose/mastodon.docker-compose.yml "
             MASTO=true
             DNS_RECORD="${DNS_RECORD}Mastodon $(dig +short "social.$DWEB_DOMAIN")\n"

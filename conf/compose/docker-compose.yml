@@ -1,5 +1,15 @@
 networks:
-  back:
+  caddy:
+  mastodon:
+    internal: true
+  mastodon_outbound:
+  synapse:
+    internal: true
+  synapse_outbound:
+  element:
+    internal: true
+  peertube:
+    internal: true
 volumes:
   caddy_data:
   caddy_config:
@@ -15,7 +25,11 @@ services:
         source: /var/www
         target: /www
     networks:
-      - back
+      - caddy
+      - mastodon
+      - synapse
+      - element
+      - peertube
     ports:
       - target: 80
         published: 80

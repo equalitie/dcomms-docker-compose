@@ -1,6 +1,8 @@
 networks:
-  back:
+  mastodon:
+  mastodon_outbound:
   mast-int:
+    internal: true
 volumes:
   mastodon_public:
   mastodon_redis:
@@ -41,7 +43,7 @@ services:
         target: /mastodon/public/system
     networks:
       - mast-int
-      - back
+      - mastodon
 
   mastodon-streaming:
     image: tootsuite/mastodon-streaming:v4.4
@@ -57,7 +59,7 @@ services:
       - mastodon-redis
     networks:
       - mast-int
-      - back
+      - mastodon
 
   mastodon-sidekiq:
     image: tootsuite/mastodon:v4.4
@@ -77,6 +79,7 @@ services:
         target: /mastodon/public/system
     networks:
       - mast-int
+      - mastodon_outbound
 
   mastodon-db:
     image: postgres:14.13-alpine
