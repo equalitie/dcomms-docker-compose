@@ -208,6 +208,14 @@ main() {
         exit 1
     fi
 
+    if ! whiptail --title "Security Warning" --yesno "Standard SSL certificate generation can reveal the existence of a dComms server via the certificate transparency logs.\n\nAre you okay with this?" 10 64; then
+        printf "User selected 'No' to site specific SSL.\n\n"
+        printf "${RED}To avoid revealing the existence of a dComms server, edit the Caddyfile\n"
+        printf "(conf/caddy/Caddyfile.tmpl) to use wildcard certificates.\n\n"
+        printf "See the Caddy docs: https://caddyserver.com/docs/automatic-https#wildcard-certificates${NC}\n"
+        exit 1
+    fi
+
     export DWEB_DOMAIN=$DWEB_DOMAIN
     # Replace dots with dashes
     export DWEB_FRIENDLY_DOMAIN="${DWEB_DOMAIN//./_}"
