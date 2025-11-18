@@ -44,6 +44,7 @@ services:
     networks:
       - mast-int
       - mastodon
+      - mastodon_outbound
 
   mastodon-streaming:
     image: tootsuite/mastodon-streaming:v4.4
