@@ -6,7 +6,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 SYN_V='v1.140.0'
-MAS_V='v4.4'
+MAS_V='v4.5'
 
 set -e
 # Directory to save dcomms config files in
