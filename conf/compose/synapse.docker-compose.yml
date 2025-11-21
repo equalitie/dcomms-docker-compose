@@ -1,0 +1,118 @@
+networks:
+  synapse:
+volumes:
+  synapse_data:
+  synapse_db:
+  mjolnir_data:
+services:
+### ELEMENT
+  # synapse is a matrix homeserver running as a service
+  synapse:
+    image: matrixdotorg/synapse:v1.140.0
+    entrypoint:
+    - sh
+    - -c
+    - chown -R 991:991 /data ; /start.py
+    volumes:
+      - synapse_data:/data
+    networks:
+      - synapse
+      - synapse_outbound
+    ports:
+      - "127.0.0.1:8008:8008"
+    environment:
+      SYNAPSE_CONFIG_DIR: "/data"
+      SYNAPSE_DATA_DIR: "/data"
+      TZ: "UA"
+    configs:
+      - source: synapse-homeserver-config
+        target: /data/homeserver.yaml
+      - source: synapse-signingkey-config
+        target: /data/matrix.${DWEB_DOMAIN}.signing.key
+      - source: synapse-logconfig-config
+        target: /data/matrix.${DWEB_DOMAIN}.log.config
+
+  synapse-pg:
+    image: postgres:14-alpine
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'
+      - 'POSTGRES_INITDB_ARGS=--encoding="UTF8" --lc-collate="C" --lc-ctype="C"'
+    volumes:
+      - synapse_db:/var/lib/postgresql/data
+    networks:
+      - synapse
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.dwebstackdomain == ${DWEB_DOMAIN}
+        max_replicas_per_node: 1
+      resources:
+        limits:
+          memory: 512M
+
+  # See docs/synapse.md for instructions on enabling this
+#  mjolnir:
+#    image: matrixdotorg/mjolnir:latest
+#    restart: unless-stopped
+#    networks:
+#      - synapse
+#    depends_on:
+#     - synapse
+#    volumes:
+#      - mjolnir_data:/data
+#    configs:
+#    - source: mjolnir-production-config
+#      target: /data/config/production.yaml
+
+  auth-service:
+    image: ghcr.io/element-hq/lk-jwt-service:latest
+    environment:
+      - LK_JWT_PORT=8080
+      - LIVEKIT_URL=https://matrixrtc.${DWEB_DOMAIN}/livekit/sfu
+      - LIVEKIT_KEY=devkey
+      - LIVEKIT_SECRET=#CHANGEMENOW # must be same as devkey in conf/synapse/livekit.yml
+      - LIVEKIT_LOCAL_HOMESERVERS=matrix.${DWEB_DOMAIN}
+      - LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING
+    restart: unless-stopped
+    networks:
+      - synapse
+    depends_on:
+     - synapse
+
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    ports:
+      - 127.0.0.1:7880:7880/tcp
+      - 127.0.0.1:7881:7881/tcp
+      - 50100-50200:50100-50200/udp
+    restart: unless-stopped
+    networks:
+      - synapse
+    depends_on:
+      - synapse
+    configs:
+      - source: livekit-config
+        target: /etc/livekit.yaml
+
+configs:
+  synapse-homeserver-config:
+    file: ../synapse/homeserver.yaml
+    external: false
+  synapse-signingkey-config:
+    file: ../synapse/matrix.${DWEB_DOMAIN}.signing.key
+    external: false
+  synapse-logconfig-config:
+    file: ../synapse/matrix.${DWEB_DOMAIN}.log.config
+    external: false
+  mjolnir-production-config:
+    file: ../mjolnir/production.yaml
+    external: false
+  livekit-config:
+    file: ../synapse/livekit.yaml
+    external: false

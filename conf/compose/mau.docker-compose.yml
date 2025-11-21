@@ -1,5 +1,7 @@
 volumes:
   mau_data:
+networks:
+  mau:
 services:
 ### MAU
   # mau is a synapse bot we run for news and other things
@@ -13,7 +15,7 @@ services:
     volumes:
       - mau_data:/data/
     networks:
-      - back
+      - mau
     depends_on:
       - caddy
       - synapse
