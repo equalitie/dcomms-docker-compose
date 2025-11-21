@@ -59,6 +59,19 @@ peertube.{$DWEB_DOMAIN}, https://peertube.{$DWEB_DOMAIN} {
   reverse_proxy http://peertube-back:9000
 }
 
+(cryptpadheaders) {
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains" always
+	}
+}
+cryptpad.{$DWEB_DOMAIN}, sandbox.{$DWEB_DOMAIN} {
+	reverse_proxy cryptpad:3000 {
+		header_up Host {upstream_hostport}
+		header_up Connection upgrade
+	}
+	import cryptpadheaders
+}
+
 social.{$DWEB_DOMAIN}, http://social.{$DWEB_ONION} {
 
     root * /srv/mastodon/public

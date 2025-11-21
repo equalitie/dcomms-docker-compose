@@ -73,6 +73,8 @@ matrix.server1.example.org -> IP of your server
 chat.server1.example.org -> IP of your server
 peertube.server1.example.org -> IP of your server
 social.server1.example.org -> IP of your server
+cryptpad.server1.example.org -> IP of your server
+sandbox.server1.example.org -> IP of your server
 server1.example.org -> IP of your server
 ```
 

@@ -164,6 +164,12 @@ peertube_config () {
 
 }
 
+cryptpad_config () {
+    mkdir -p $DCOMMS_DIR/conf/cryptpad/data/{blob,block,data,files} customize onlyoffice-dist onlyoffice-conf
+    sudo chown -R 4001:4001 $DCOMMS_DIR/conf/cryptpad/*
+
+}
+
 mau_config () {
     printf "${YELLOW}## Generating mau bot config${NC}\n"
     docker run --rm --mount type=bind,src=$(readlink -f $DCOMMS_DIR/conf/mau),dst=/data dock.mau.dev/maubot/maubot:v0.3.1 1>&2  >/dev/null
@@ -225,7 +231,8 @@ main() {
       "2" "Ceno Bridge" ON \
       "3" "Maubot" OFF \
       "4" "Mastodon" OFF \
-      "5" "Peertube" OFF 3>&1 1>&2 2>&3)
+      "5" "Peertube" OFF \
+      "6" "Cryptpad" OFF 3>&1 1>&2 2>&3)
 
     if [ -z "$CHOICES" ]; then
       echo "No option was selected (user hit Cancel or unselected all options)"
@@ -260,6 +267,11 @@ main() {
             COMPOSE_FILES+="-f ./conf/compose/peertube.docker-compose.yml "
             PEERTUBE=true
             DNS_RECORD="${DNS_RECORD}Peertube $(dig +short "peertube.$DWEB_DOMAIN")\n"
+	  ;;
+	"6")
+            COMPOSE_FILES+="-f ./conf/compose/cryptpad.docker-compose.yml "
+            CRYPTPAD=true
+            DNS_RECORD="${DNS_RECORD}Cryptpad $(dig +short "cryptpad.$DWEB_DOMAIN")\n"
 	  ;;
         *)
           echo "Unsupported item $CHOICE!" >&2
@@ -330,6 +342,10 @@ main() {
     if [[ "${PEERTUBE}" == true ]]; then
         peertube_config
     fi
+    if [[ "${CRYPTPAD}" == true ]]; then
+        cryptpad_config
+    fi
+
     echo "sudo DWEB_ONION=$DWEB_ONION DWEB_DOMAIN=$DWEB_DOMAIN DWEB_FRIENDLY_DOMAIN=$DWEB_FRIENDLY_DOMAIN docker compose $COMPOSE_FILES up -d" >> $DCOMMS_DIR/run.sh
     chmod +x $DCOMMS_DIR/run.sh
     printf "${GREEN} dComms succesfully installed! Start your services by running 'run.sh' in $DCOMMS_DIR.${NC}\n"

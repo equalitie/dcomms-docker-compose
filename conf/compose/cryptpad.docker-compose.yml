@@ -1,0 +1,33 @@
+---
+networks:
+  cryptpad:
+services:
+  cryptpad:
+    image: "cryptpad/cryptpad:latest"
+    hostname: cryptpad
+
+    environment:
+      - CPAD_MAIN_DOMAIN=https://cryptpad.${DWEB_DOMAIN}
+      - CPAD_SANDBOX_DOMAIN=https://sandbox.${DWEB_DOMAIN}
+      - CPAD_CONF=/cryptpad/config/config.js
+
+      # Read and accept the license before uncommenting the following line:
+      # https://github.com/ONLYOFFICE/web-apps/blob/master/LICENSE.txt
+      - CPAD_INSTALL_ONLYOFFICE=yes
+
+    volumes:
+      - ../cryptpad/data/blob:/cryptpad/blob
+      - ../cryptpad/data/block:/cryptpad/block
+      - ../cryptpad/customize:/cryptpad/customize
+      - ../cryptpad/data/data:/cryptpad/data
+      - ../cryptpad/data/files:/cryptpad/datastore
+      - ../cryptpad/onlyoffice-dist:/cryptpad/www/common/onlyoffice/dist
+      - ../cryptpad/onlyoffice-conf:/cryptpad/onlyoffice-conf
+
+    networks:
+      - cryptpad
+
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
