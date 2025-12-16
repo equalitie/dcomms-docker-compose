@@ -165,7 +165,7 @@ peertube_config () {
 }
 
 cryptpad_config () {
-    mkdir -p $DCOMMS_DIR/conf/cryptpad/data/{blob,block,data,files} customize onlyoffice-dist onlyoffice-conf
+    mkdir -p $DCOMMS_DIR/conf/cryptpad/data/{blob,block,data,files} $DCOMMS_DIR/conf/cryptpad/customize $DCOMMS_DIR/conf/cryptpad/onlyoffice-dist $DCOMMS_DIR/conf/cryptpad/onlyoffice-conf
     sudo chown -R 4001:4001 $DCOMMS_DIR/conf/cryptpad/*
 
 }
