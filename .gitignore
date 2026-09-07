@@ -1,8 +1,8 @@
 conf/element/*
 !conf/element/config.json
 !conf/element/nginx.conf
-!conf/synapse/livekit.yaml
 conf/synapse/*
+!conf/synapse/livekit.yaml
 conf/caddy/*
 conf/caddy/certs/*
 !conf/caddy/certs/.gitkeep

@@ -4,7 +4,7 @@ services:
 ### ELEMENT
   # element is a matrix web GUI running as a service
   element:
-    image: vectorim/element-web:v1.11.110
+    image: vectorim/element-web:v1.12.27
     networks:
       - element
     ports:
